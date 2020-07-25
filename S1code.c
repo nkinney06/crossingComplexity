@@ -16,7 +16,7 @@
 //
 // I thought about doing a major revision including renaming variables and function but
 // decided to keep the code identical to that used to generate data in our publication.
-// updates will be made in the following git repo:
+// updates will be made in the following git repo: https://github.com/nkinney06/crossingComplexity
 //
 // comments in this version of the code are sparse. Again see the git repo for updates
 //
