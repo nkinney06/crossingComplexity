@@ -10,11 +10,22 @@ contact nkinney06 [at] gmail.com for questions.
 
 
 QUICK START
-gcc -Wall -Werror -O3 S1code.c -o multiHamiltonian
 
-./multiHamiltonian --numberPaths 2 --initialSize 16 | python vtf.py > equilibrium.vtf
-./multiHamiltonian --numberPaths 2 --initialSize 8 --cycles 2 | python vtf.py > intermediate.vtf
-./multiHamiltonian --numberPaths 2 --initialSize 4 --cycles 2,2 | python vtf.py > Hilbert.vtf
+exercise 1: generate and visualize some structires
 
-use VMD to to open the vtf files
+	gcc -Wall -Werror -O3 S1code.c -o multiHamiltonian
+	./multiHamiltonian --numberPaths 2 --initialSize 16 | python vtf.py > equilibrium.vtf
+	./multiHamiltonian --numberPaths 2 --initialSize 8 --cycles 2 | python vtf.py > intermediate.vtf
+	./multiHamiltonian --numberPaths 2 --initialSize 4 --cycles 2,2 | python vtf.py > Hilbert.vtf
+	use VMD to to open the vtf files https://www.ks.uiuc.edu/Research/vmd/
+
+
+exercise 2: generate a structures and compute crossing complexity
+
+	gcc -Wall -Werror -O3 S1code.c -o multiHamiltonian
+	gcc -Wall -Werror -O3 -fopenmp S2code.c -o crossingComplexity -lm
+	python dir.py 1000
+	./multiHamiltonian --numberPaths 2 --initialSize 16 | python txt.py
+	./crossingComplexity vectors.txt curve_1.txt curve_2.txt > crossingComplexity.txt
+
 
