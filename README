@@ -2,8 +2,19 @@
 supplementary codes for the paper,
 "Crossing Complexity of Space-Filling Curves Reveals Entanglement of S-Phase DNA"
 
-Initial commits are the codes used for generating data. All future update and
+Initial commits are the codes used for generating data. All future updates and
 documentation will be made here.
 
 contact nkinney06 [at] gmail.com for questions.
+
+
+
+QUICK START
+gcc -Wall -Werror -O3 S1code.c -o multiHamiltonian
+
+./multiHamiltonian --numberPaths 2 --initialSize 16 | python vtf.py > equilibrium.vtf
+./multiHamiltonian --numberPaths 2 --initialSize 8 --cycles 2 | python vtf.py > intermediate.vtf
+./multiHamiltonian --numberPaths 2 --initialSize 4 --cycles 2,2 | python vtf.py > Hilbert.vtf
+
+use VMD to to open the vtf files
 
