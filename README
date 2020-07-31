@@ -29,3 +29,10 @@ exercise 2: generate a structures and compute crossing complexity
 	./crossingComplexity vectors.txt curve_1.txt curve_2.txt > crossingComplexity.txt
 
 
+exercise 3: generate figures
+
+	python simpleHeatmap.py crossingComplexity.txt
+	python cubizeHeatmap.py crossingComplexity.txt
+	python vectorHeatmap.py crossingComplexity.txt
+	python sphereHeatmap.py crossingComplexity.txt
+
