@@ -2,37 +2,51 @@
 supplementary codes for the paper,
 "Crossing Complexity of Space-Filling Curves Reveals Entanglement of S-Phase DNA"
 
-Initial commits are the codes used for generating data. All future updates and
-documentation will be made here.
-
 contact nkinney06 [at] gmail.com for questions.
 
 
 
 QUICK START
 
-exercise 1: generate and visualize some structires
 
+FIRST COMPILE the C codes and make some test directions:
 	gcc -Wall -Werror -O3 S1code.c -o multiHamiltonian
+	gcc -Wall -Werror -O3 -fopenmp S2code.c -o crossingComplexity -lm
+	python dir.py 1000
+
+
+exercise 1: generate and visualize some structires
 	./multiHamiltonian --numberPaths 2 --initialSize 16 | python vtf.py > equilibrium.vtf
 	./multiHamiltonian --numberPaths 2 --initialSize 8 --cycles 2 | python vtf.py > intermediate.vtf
 	./multiHamiltonian --numberPaths 2 --initialSize 4 --cycles 2,2 | python vtf.py > Hilbert.vtf
+	./multiHamiltonian --msd 10 --numberPaths 4 --initialSize 4 --cycles 3,2 | python vtf.py > largeExample.vtf
+	./multiHamiltonian --msd 0 --numberPaths 3 --initialSize 3 --cycles 2,2,2 | python vtf.py > anotherExample.vtf
 	use VMD to to open the vtf files https://www.ks.uiuc.edu/Research/vmd/
 
 
 exercise 2: generate a structures and compute crossing complexity
-
-	gcc -Wall -Werror -O3 S1code.c -o multiHamiltonian
-	gcc -Wall -Werror -O3 -fopenmp S2code.c -o crossingComplexity -lm
-	python dir.py 1000
 	./multiHamiltonian --numberPaths 2 --initialSize 16 | python txt.py
 	./crossingComplexity vectors.txt curve_1.txt curve_2.txt > crossingComplexity.txt
 
 
 exercise 3: generate figures
-
 	python simpleHeatmap.py crossingComplexity.txt
 	python cubizeHeatmap.py crossingComplexity.txt
 	python vectorHeatmap.py crossingComplexity.txt
 	python sphereHeatmap.py crossingComplexity.txt
 
+
+exercise 4: generate an ensemble of 10 stuctures and place each snapshot in a seperate directory
+	for i in {1..10}; 
+	do mkdir snapshot_$i; 
+	./multiHamiltonian --numberPaths 2 --initialSize 16 > snapshot.txt; 
+	cat snapshot.txt | python txt.py; 
+	cat snapshot.txt | python vtf.py > snapshot.vtf; 
+	./crossingComplexity vectors.txt curve_1.txt curve_2.txt > crossingComplexity.txt; 
+	mv snapshot.txt curve_1.txt curve_2.txt snapshot.vtf crossingComplexity.txt snapshot_$i/; 
+	done
+
+
+exercise 5: run analysis of an entire ensemble (extension of exercise 4)
+	mkdir equilibrium & mv snapshot_[1:10] equilibrium/
+	python densityAnalysis.py equilibrium
