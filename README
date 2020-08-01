@@ -6,7 +6,7 @@ contact nkinney06 [at] gmail.com for questions.
 
 
 
-QUICK START
+QUICK START (I recommend trying the exercises in order)
 
 
 FIRST COMPILE the C codes and make some test directions:
@@ -15,7 +15,7 @@ FIRST COMPILE the C codes and make some test directions:
 	python dir.py 1000
 
 
-exercise 1: generate and visualize some structires
+exercise 1: generate and visualize some structires (NOTE the 4th command nests 3x3x3 paths and takes about 5 minutes)
 	./multiHamiltonian --numberPaths 2 --initialSize 16 | python vtf.py > equilibrium.vtf
 	./multiHamiltonian --numberPaths 2 --initialSize 8 --cycles 2 | python vtf.py > intermediate.vtf
 	./multiHamiltonian --numberPaths 2 --initialSize 4 --cycles 2,2 | python vtf.py > Hilbert.vtf
@@ -48,6 +48,8 @@ exercise 4: generate an ensemble of 10 stuctures and place each snapshot in a se
 
 
 exercise 5: run analysis of an entire ensemble (extension of exercise 4)
-	mkdir equilibrium & mv snapshot_[1:10] equilibrium/
+	mkdir equilibrium
+	mv snapshot_* equilibrium/
 	python densityAnalysis.py equilibrium
 	python ergodicAnalysis.py equilibrium
+	python knotDeterminant.py equilibrium 1>/dev/null 2>/dev/null
