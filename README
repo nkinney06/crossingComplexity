@@ -50,3 +50,4 @@ exercise 4: generate an ensemble of 10 stuctures and place each snapshot in a se
 exercise 5: run analysis of an entire ensemble (extension of exercise 4)
 	mkdir equilibrium & mv snapshot_[1:10] equilibrium/
 	python densityAnalysis.py equilibrium
+	python ergodicAnalysis.py equilibrium
