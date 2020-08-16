@@ -54,3 +54,9 @@ exercise 5: run analysis of an entire ensemble (extension of exercise 4)
 	python ergodicAnalysis.py equilibrium
 	python knotDeterminant.py equilibrium 1>/dev/null 2>/dev/null
 	python GaussLinkNumber.py equilibrium > linkingNumbers.txt
+
+
+exercise 6: generate xyz data for KnotGenom
+	./multiHamiltonian --numberPaths 3 --initialSize 3 | python xyz.py > structure.xyz
+	upload structure.xyz to https://knotgenom.cent.uw.edu.pl/
+
