@@ -43,7 +43,7 @@ exercise 4: generate an ensemble of 10 stuctures and place each snapshot in a se
 	cat snapshot.txt | python txt.py; 
 	cat snapshot.txt | python vtf.py > snapshot.vtf; 
 	./crossingComplexity vectors.txt curve_1.txt curve_2.txt > crossingComplexity.txt; 
-	mv snapshot.txt curve_1.txt curve_2.txt snapshot.vtf crossingComplexity.txt snapshot_$i/; 
+	mv snapshot.txt curve* snapshot.vtf crossingComplexity.txt snapshot_$i/; 
 	done
 
 
@@ -53,3 +53,4 @@ exercise 5: run analysis of an entire ensemble (extension of exercise 4)
 	python densityAnalysis.py equilibrium
 	python ergodicAnalysis.py equilibrium
 	python knotDeterminant.py equilibrium 1>/dev/null 2>/dev/null
+	python GaussLinkNumber.py equilibrium > linkingNumbers.txt
