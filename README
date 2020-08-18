@@ -3,7 +3,7 @@ supplementary codes for the paper,
 "Crossing Complexity of Space-Filling Curves Reveals Entanglement of S-Phase DNA"
 
 contact nkinney06 [at] gmail.com for questions.
-
+better documentation of these codes is a work in progress, check back for updates
 
 
 QUICK START (I recommend trying the exercises in order)
@@ -12,6 +12,7 @@ QUICK START (I recommend trying the exercises in order)
 FIRST COMPILE the C codes and make some test directions:
 	gcc -Wall -Werror -O3 S1code.c -o multiHamiltonian
 	gcc -Wall -Werror -O3 -fopenmp S2code.c -o crossingComplexity -lm
+	gcc -O3 chulls.c -o calcTerritories -lm
 	python dir.py 1000
 
 
@@ -59,4 +60,13 @@ exercise 5: run analysis of an entire ensemble (extension of exercise 4)
 exercise 6: generate xyz data for KnotGenom
 	./multiHamiltonian --numberPaths 3 --initialSize 3 | python xyz.py > structure.xyz
 	upload structure.xyz to https://knotgenom.cent.uw.edu.pl/
+
+
+exercise 7: generate a structure and preform analysis of territories
+	./multiHamiltonian --numberPaths 2 --initialSize 16 > snapshot.txt
+	cat snapshot.txt | python int.py
+	./calcTerritories curve_1.txt curve_2.txt > territories.txt
+	cat snapshot.txt | python vtf.py > system.vtf
+	python tcl.py ( requires command line vmd and tacyon ray tracer )
+	
 

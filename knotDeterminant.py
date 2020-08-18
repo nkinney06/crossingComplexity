@@ -34,7 +34,7 @@ for curve in datafiles:
 		fractions = k.alexander_fractions(number_of_samples=100)
 		print(curve + " " + str(max(fractions,key=itemgetter(1))[0]), file = outfile, flush = True)
 	except:
-                pass
+                print(curve + " 0", file=outfile, flush = True) # cant determine the knot type
 
 outfile.close()
 

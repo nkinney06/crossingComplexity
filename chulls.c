@@ -713,14 +713,14 @@ int main(int argc, char** argv)
 		DeleteAll();
 	}
 				
-	// printf("curveNum x y z othType selfType\n");
+	// printf("x y z n othType selfType\n");
 				
 	// print results
 	for ( i = 0 ; i < p_length ; i++ )
-		printf("%d %d %d 0 %s %s\n",p[i].x, p[i].y, p[i].z, p[i].invader ? "invades" : "outside", p[i].inhull ? "exterior" : "interior");
+		printf("%d %d %d 0 %s %s\n",p[i].x, p[i].y, p[i].z, p[i].invader ? "1" : "0", p[i].inhull ? "0" : "1");
 		
 	for ( i = 0 ; i < q_length ; i++ )
-		printf("%d %d %d 1 %s %s\n",q[i].x, q[i].y, q[i].z, q[i].invader ? "invades" : "outside", q[i].inhull ? "exterior" : "interior");
+		printf("%d %d %d 1 %s %s\n",q[i].x, q[i].y, q[i].z, q[i].invader ? "1" : "0", q[i].inhull ? "0" : "1");
 
 	return 0;
 }
