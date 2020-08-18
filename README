@@ -70,3 +70,47 @@ exercise 7: generate a structure and preform analysis of territories
 	python tcl.py ( requires command line vmd and tacyon ray tracer )
 	
 
+
+
+NOTES ON EXERCISE 7 (INSTALLING VMD AND TACHYON)
+------------------------------------------------------------------------------------------------------------------------------------------------
+command line version of VMD can be obtained here (see LINUX_64 Text-mode (Linux (RHEL 6.7 and later) 64-bit Intel/AMD x86_64 w/ SSE, Text-mode))
+	https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
+	tar xvf vmd-1.9.3.bin.LINUXAMD64.text.tar.gz
+	(actually I recommend vmd-1.9.2)
+
+create a directory for vmd to live with the following directory structure,	     
+	vmd
+	├ bin
+	└ lib
+ 
+update the configure file according to the VMD install instructions
+	$install_bin_dir="/home/nick/vmd/bin";
+	$install_library_dir="/home/nick/vmd/lib";
+	./configure
+	cd src/
+	make install
+
+add VMD to your path:
+	export PATH="/home/nick/vmd/bin:$PATH"
+	source .bashrc
+	
+get the current tachyon distribution: (I highly recommend Version 0.99)
+	http://jedi.ks.uiuc.edu/~johns/raytracer/files/0.98.9/
+	tar xvf tachyon-0.98.9.tar.gz
+	cd tachyon/unix
+	make linux-64
+
+add Tachyon to your path
+	export PATH="/home/nick/tachyon/compile/linux-64:$PATH"
+	source .bashrc
+
+
+
+
+
+
+
+
+
+
