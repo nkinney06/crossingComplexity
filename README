@@ -72,7 +72,7 @@ exercise 7: generate a structure and preform analysis of territories
 
 
 
-NOTES ON EXERCISE 7 (INSTALLING VMD AND TACHYON)
+NOTES ON EXERCISE 7 (INSTALLING VMD AND TACHYON tested on 8/18/2020)
 ------------------------------------------------------------------------------------------------------------------------------------------------
 command line version of VMD can be obtained here (see LINUX_64 Text-mode (Linux (RHEL 6.7 and later) 64-bit Intel/AMD x86_64 w/ SSE, Text-mode))
 	https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
