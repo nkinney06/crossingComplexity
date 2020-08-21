@@ -14,7 +14,7 @@ color = "Fragment"
 size = .1
 
 outfile = open("vmd.tcl", "w")
-outfile.write("mol new ./system.vtf\n")
+outfile.write("mol new ./snapshot.vtf\n")
 outfile.write("mol representation Licorice " + str(size) + " 42\n")
 outfile.write("mol color " + color + "\n")
 outfile.write("mol material AOChalky\n")
