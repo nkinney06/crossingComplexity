@@ -109,24 +109,37 @@ add Tachyon to your path
 
 outline of a script to preform all analysis for a sample of curves
 -----------------------------------------------------------------------------------------------------------------------------------
-	for i in {1..2}; 
-	do mkdir snapshot_$i; 
-	./multiHamiltonian --numberPaths 2 --initialSize 16 > snapshot.txt; 
-	cat snapshot.txt | python vtf.py > snapshot.vtf; 
-	cat snapshot.txt | python txt.py; 
-	./crossingComplexity vectors.txt curve_1.txt curve_2.txt > crossingComplexity.txt; 
-	cat snapshot.txt | python int.py
-	./calcTerritories curve_1.txt curve_2.txt > territories.txt
-	python tcl.py
-	python simpleHeatmap.py crossingComplexity.txt
-	python cubizeHeatmap.py crossingComplexity.txt
-	python vectorHeatmap.py crossingComplexity.txt
-	python sphereHeatmap.py crossingComplexity.txt
-	mv *.png *.tcl *.dat territories.txt *.bmp snapshot.txt curve* snapshot.vtf crossingComplexity.txt snapshot_$i/; 
-	done
+for i in {1..2}; 
+do mkdir snapshot_$i; 
+./multiHamiltonian --numberPaths 2 --initialSize 16 > snapshot.txt; 
+cat snapshot.txt | python vtf.py > snapshot.vtf; 
+cat snapshot.txt | python txt.py; 
+./crossingComplexity vectors.txt curve_1.txt curve_2.txt > crossingComplexity.txt; 
+cat snapshot.txt | python int.py
+./calcTerritories curve_1.txt curve_2.txt > territories.txt
+python tcl.py
+python simpleHeatmap.py crossingComplexity.txt
+python cubizeHeatmap.py crossingComplexity.txt
+python vectorHeatmap.py crossingComplexity.txt
+python sphereHeatmap.py crossingComplexity.txt
+mv *.png *.tcl *.dat territories.txt *.bmp snapshot.txt curve* snapshot.vtf crossingComplexity.txt snapshot_$i/; 
+done
 
 
+outline of a script to preform knots and linking analysis for a sample of curves
+-----------------------------------------------------------------------------------------------------------------------------------
+for i in {1..100};
+do mkdir snapshot_$i;
+./multiHamiltonian --numberPaths 3 --initialSize 9 > snapshot.txt;
+cat snapshot.txt | python txt.py;
+cat snapshot.txt | python xyz.py > structure.xyz
+mv snapshot.txt curve* structure.xyz snapshot_$i/;
+done
 
+mkdir ensemble
+mv snapshot_* ensemble/
+python knotDeterminant.py ensemble 1>/dev/null 2>/dev/null
+python GaussLinkNumber.py ensemble > linkingNumbers.txt
 
 
 
