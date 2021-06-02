@@ -807,12 +807,12 @@ int aggregate( int verbose ) {
 	return 0;
 }
 
-void convolution( int convolve ) {
+void convolution( int convolve,char *matFile,char *bndFile  ) {
 	int i,j;
-	FILE *matr = fopen("/home/jovyan/data/inputMatrix.txt", "w");
+	FILE *matr = fopen(matFile,"w");
 	if (matr == NULL)
 		exit(1);
-	FILE *bndr = fopen("/home/jovyan/data/inputBounds.txt", "w");
+	FILE *bndr = fopen(bndFile,"w");
 	if (bndr == NULL)
 		exit(1);
 	memset(Reg, 0, sizeof Reg);
@@ -867,9 +867,14 @@ int main(int argc, char **argv)
 	int deconvolve = -1; // deconvolution mode
 	evalPtr = &eval;
 	
-	// as of right not these are not optional parameters
-	char matFile[42] = "/home/jovyan/data/inputMatrix.txt";
-	char bndFile[42] = "/home/jovyan/data/inputBounds.txt";
+	// the file paths are a bit sloppy
+	char matFile[96] = "";
+	char bndFile[96] = "";
+	char outMatr[96] = "";
+	char outFold[96] = "";
+	char outLogs[96] = "";
+	char outTarg[96] = "";
+	char saveDir[96] = "";
 	
 	//////////////////////////////////////////////////////////
 	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html#OPTOPTARGS
@@ -883,6 +888,7 @@ int main(int argc, char **argv)
 			{"segsize",     required_argument, NULL,  'z'},
 			{"numPaths",    required_argument, NULL,  'n'},
 			{"evaluation",  required_argument, NULL,  'e'},
+			{"saveDir",     required_argument, NULL,  'o'},
 			{"help",        no_argument,       NULL,  'h'},
 			{"verbose",     no_argument,       NULL,  'v'},
 			{"convolve",    optional_argument, NULL,  'c'},
@@ -891,7 +897,7 @@ int main(int argc, char **argv)
 			{NULL,          0,                 NULL,    0}
 		};
 
-		c = getopt_long(argc, argv, "-:s:z:n:e:ohvc::d::b::", long_options, &option_index);
+		c = getopt_long(argc, argv, "-:s:z:n:e:o:hvc::d::b::", long_options, &option_index);
 		if (c == -1)
 		  break;
 
@@ -921,6 +927,24 @@ int main(int argc, char **argv)
 		  case 'n':
 			printf("setting numPaths to '%s'\n", optarg);
 			numPaths = atoi(optarg);
+			break;
+			
+		  case 'o':
+			printf("setting output directory to '%s'\n", optarg);
+			strcpy(saveDir,"/home/jovyan/data/");
+			strcat(saveDir,optarg);
+			strcpy(matFile,saveDir);
+			strcpy(bndFile,saveDir);
+			strcpy(outMatr,saveDir);
+			strcpy(outFold,saveDir);
+			strcpy(outLogs,saveDir);
+			strcpy(outTarg,saveDir);
+			strcat(matFile,"/inputMatrix.txt");
+			strcat(bndFile,"/inputBounds.txt");
+			strcat(outMatr,"/outputMatrix.txt");
+			strcat(outFold,"/outputFolded.txt");
+			strcat(outLogs,"/outputLogged.txt");
+			strcat(outTarg,"/outputTarget.txt");
 			break;
 			
 		  case 'e':
@@ -959,6 +983,7 @@ int main(int argc, char **argv)
 		    printf(" --pathSize (s) size of the box\n");
 			printf(" --segsize (z) size of boundary segmentation\n");
 			printf(" --numPaths (n) num of paths withing the box\n");
+			printf(" --savedir (o) where to save and read the input matrix\n");
 			printf(" --evaluation (e) type of evaluation function\n");
 			printf("   -e eval is quick and suitable for 1 matrix\n");
 			printf("   -e comp is slow and used for deconvolution\n");
@@ -989,6 +1014,15 @@ int main(int argc, char **argv)
 		 }
 	}
 
+	if ( saveDir[0] == '\0' ) {
+		strcpy(matFile,"/home/jovyan/data/results/inputMatrix.txt");
+		strcpy(bndFile,"/home/jovyan/data/results/inputBounds.txt");
+		strcat(outMatr,"/home/jovyan/data/results/outputMatrix.txt");
+		strcat(outFold,"/home/jovyan/data/results/outputFolded.txt");
+		strcat(outLogs,"/home/jovyan/data/results/outputLogged.txt");
+		strcat(outTarg,"/home/jovyan/data/results/outputTarget.txt");
+	}
+	
 	//////////////////////////////////////////////////////////
     // update a few global variables
     ////////////////////////////////////////////////////////// 
@@ -1004,23 +1038,23 @@ int main(int argc, char **argv)
 	// if we are generating a random matrix
     ////////////////////////////////////////////////////////// 
 	if ( convolve > 0 )
-		convolution(convolve);
+		convolution(convolve,matFile,bndFile);
 	if ( deconvolve < 0 )
 		return 0;
 
 	//////////////////////////////////////////////////////////
     // the rest of the code if for deconvolution, first open outfiles
     ////////////////////////////////////////////////////////// 
-	FILE *fold = fopen("/home/jovyan/data/outputFolded.txt", "w");
+	FILE *fold = fopen(outFold, "w");
 	if (fold == NULL)
 		exit(1);
-	FILE *matr = fopen("/home/jovyan/data/outputMatrix.txt", "w");
+	FILE *matr = fopen(outMatr, "w");
 	if (matr == NULL) 
 		exit(1);
-	FILE *outf = fopen("/home/jovyan/data/outputTarget.txt", "w");
+	FILE *outf = fopen(outTarg, "w");
 	if (outf == NULL)
 		exit(1);
-	FILE *logs = fopen("/home/jovyan/data/outputLogged.txt", "w");
+	FILE *logs = fopen(outLogs, "w");
 	if (outf == NULL)
 		exit(1);
 			
