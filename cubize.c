@@ -809,10 +809,10 @@ int aggregate( int verbose ) {
 
 void convolution( int convolve ) {
 	int i,j;
-	FILE *matr = fopen("inputMatrix.txt", "w");
+	FILE *matr = fopen("/home/jovyan/data/inputMatrix.txt", "w");
 	if (matr == NULL)
 		exit(1);
-	FILE *bndr = fopen("inputBounds.txt", "w");
+	FILE *bndr = fopen("/home/jovyan/data/inputBounds.txt", "w");
 	if (bndr == NULL)
 		exit(1);
 	memset(Reg, 0, sizeof Reg);
@@ -868,8 +868,8 @@ int main(int argc, char **argv)
 	evalPtr = &eval;
 	
 	// as of right not these are not optional parameters
-	char matFile[24] = "inputMatrix.txt";
-	char bndFile[24] = "inputBounds.txt";
+	char matFile[42] = "/home/jovyan/data/inputMatrix.txt";
+	char bndFile[42] = "/home/jovyan/data/inputBounds.txt";
 	
 	//////////////////////////////////////////////////////////
 	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html#OPTOPTARGS
@@ -1011,16 +1011,16 @@ int main(int argc, char **argv)
 	//////////////////////////////////////////////////////////
     // the rest of the code if for deconvolution, first open outfiles
     ////////////////////////////////////////////////////////// 
-	FILE *fold = fopen("outputFolded.txt", "w");
+	FILE *fold = fopen("/home/jovyan/data/outputFolded.txt", "w");
 	if (fold == NULL)
 		exit(1);
-	FILE *matr = fopen("outputMatrix.txt", "w");
+	FILE *matr = fopen("/home/jovyan/data/outputMatrix.txt", "w");
 	if (matr == NULL) 
 		exit(1);
-	FILE *outf = fopen("outputTarget.txt", "w");
+	FILE *outf = fopen("/home/jovyan/data/outputTarget.txt", "w");
 	if (outf == NULL)
 		exit(1);
-	FILE *logs = fopen("outputLogged.txt", "w");
+	FILE *logs = fopen("/home/jovyan/data/outputLogged.txt", "w");
 	if (outf == NULL)
 		exit(1);
 			
