@@ -6,47 +6,40 @@
 #include <getopt.h>
 
 //////////////////////////////////////////////////////////////////////////////////////
-// gcc -Wall -Werror -O3 cubize.c -mcmodel=large -o cubize            
+// gcc -Wall -Werror -O3 cubizeDraftTwo.c -mcmodel=large -o cubize            
 //////////////////////////////////////////////////////////////////////////////////////
 					
 //////////////////////////////////////////////////////////////////////////////////////
 // global variables and structures
 //////////////////////////////////////////////////////////////////////////////////////
 
-struct computed {       // results whill be stored here
-	int p[16384];       // current working path. 
-	int L;              // length of the path
-	int n;              // path number
-};
-
-struct shape {          // for holding the subregion reconstructions
-	int p[729];
-	int region;
-	int eval;
-	int L;
+struct computed {    // results whill be stored here
+	int p[16384];    // current working path. 
+	int L;           // length of the path
+	int n;           // path number
 };
 
 // counters
-int cpn,cpm,pos,ply;     // search depth used by the search function
-int TPN,TOL;             // total pathNumber, tolerance
-int L[7];                // powers of the fundamental length
+int cpn,cpm,pos,ply;  // search depth used by the search function
+int TPN,TOL;          // total pathNumber, tolerance
+int L[7];             // powers of the fundamental length
 
-// move lists and indexing
-int mL[16384];           // used to store lists of moves used by the search function
-int fM[16384];           // keeps track of where the moves lists start and stop
-int bC[16384];           // b oundary conditions
-int bS[16384];           // boundary segments
+int sL[1000001000];
+int sR[100001000];
+int sE[100001000];
+int fS[100001000];
+int mL[16384];        // used to store lists of moves used by the search function
+int fM[16384];        // keeps track of where the moves lists start and stop
+int bC[16384];        // b oundary conditions
+int bS[16384];        // boundary segments
+int lp[531441];       // for computing the hic matrix
+int Mat[532899];      // current working path matrix
+int HiC[532899];      // this is the target matrix that we want to match
+int Reg[532899];      // space to hold the submatrix for reconstructions
 
-// a few temporary variables that are useful to have access to globally
 struct computed cp, tp;     // single paths (current path and temp path)
 struct computed np[1000];   // numbered paths
-struct shape S[10800000];   // subregions max
-int lp[531441];             // for computing the hic matrix
 
-// hic matrix we want to match and the 
-int Mat[532899];   // current working path matrix
-int HiC[532899];   // this is the target matrix that we want to match
-int Reg[532899];   // space to hold the submatrix for reconstructions
 void (*savePtr)(); // pointer for how the search function saves paths
 int (*evalPtr)();  // pointer for how the search function evals paths
 
@@ -279,10 +272,10 @@ void saveNP() {
 
 void saveSR( int cpeval ) {
 	int i;
-	for ( i = 0 ; i < cp.L ; i++ ) 
-		S[cpm].p[i] = cp.p[i];
-	S[cpm].L = cp.L;
-	S[cpm].eval = cpeval;
+	fS[cpm+1] = fS[cpm];
+	for ( i = 0 ; i < cp.L ; i++ )
+		sL[fS[cpm+1]++] = cp.p[i];
+	sE[cpm] = cpeval;
 	cpm++;
 }
 
@@ -549,16 +542,22 @@ int scoreBoundary( int n ) {
 // shape library management
 /////////////////////////////////////////////////////////////////////////////////////////
 void deleteShape( int n ) {
-	int i;
-	for ( i = n ; i < cpm-1 ; i++ )
-		S[i] = S[i+1];
+	int i,j;
+	j = fS[n+1] - fS[n];
+	for ( i = fS[n] ; i < fS[cpm]-j ; i++ )
+		sL[i] = sL[i+j];
 	cpm--;
+	for ( i = n ; i < cpm ; i++ ) {
+		sR[i] = sR[i+1];
+		sE[i] = sE[i+1];
+		fS[i+1] = fS[i+2]-j;
+	}
 }
 		
 int nextShape( int n ) {
 	int i;
 	for ( i = 0 ; i < cpm ; i++ )
-		if ( S[i].region == n )
+		if ( sR[i] == n )
 			return i;
 	return -1;
 }
@@ -566,7 +565,7 @@ int nextShape( int n ) {
 int countRegions( int n ) {
 	int i,total=0;
 	for ( i = 0 ; i < cpm ; i++ )
-		if ( S[i].region == n )
+		if ( sR[i] == n )
 			total++;
 	return total;
 	}
@@ -579,8 +578,8 @@ void deleteRegion( int region ) {
 void resetsRegion( int i, int j, int k ) {
 	int a;
 	for ( a = 0 ; a < cpm ; a++ )
-		if ( S[a].region == i )
-			S[a].region = j;
+		if ( sR[a] == i )
+			sR[a] = j;
 	for ( a = 0 ; a < L[3] ; a++ )
 		if ( bS[a] == k )
 			bS[a] = j;
@@ -589,9 +588,9 @@ void resetsRegion( int i, int j, int k ) {
 int worsteShape() {
 	int i,j=0,k=-1;
 	for ( i = 0 ; i < cpm ; i++ )
-		if ( S[i].eval > k ) {
+		if ( sE[i] > k ) {
 			j = i;
-			k = S[i].eval;
+			k = sE[i];
 		}
 	return j;
 }
@@ -599,9 +598,9 @@ int worsteShape() {
 int bestShape() {
 	int i,j=0,k=10000000;
 	for ( i = 0 ; i < cpm ; i++ )
-		if ( S[i].eval < k ) {
+		if ( sE[i] < k ) {
 			j = i;
-			k = S[i].eval;
+			k = sE[i];
 		}
 	return j;
 }
@@ -626,7 +625,7 @@ void pathsMatched( int a, int b, int c, int r, int s ) {
 	saveSubrgMatrix( a, b );
 	search(1000000,c);
 	for ( i = s ; i < cpm ; i++ )
-		S[i].region = r;
+		sR[i] = r;
 }
 
 void enumerateSR() {
@@ -682,18 +681,20 @@ int mergeRegions( int a, int b ) {
 	int region = arrayMax(bS,0,L[3]);
 	cp.L = 0;
 	for ( k = 0 ; k < L[3] ; k++ ) {
-		if ( bS[k] == S[a].region )
-			cp.p[cp.L++] = S[a].p[n++];
-		if ( bS[k] == S[b].region )
-			cp.p[cp.L++] = S[b].p[m++];
+		if ( bS[k] == sR[a] )
+			cp.p[cp.L++] = sL[fS[a] + n++];
+		if ( bS[k] == sR[b] )
+			cp.p[cp.L++] = sL[fS[b] + m++];
 	}
 	currentHiC();
 	cpeval = (*evalPtr)();
 	if ( cpeval <= TOL ) {
 		saveSR(cpeval);
-		S[cpm-1].region = region+1;
+		sR[cpm-1] = region+1;
 		cpn++;
-		if ( cpm > 10000000 )
+		if ( cpm > 100000000 )
+			deleteShape( worsteShape() );
+		if( fS[cpm] > 1000000000 )
 			deleteShape( worsteShape() );
 	}
 	return 0;
@@ -751,27 +752,26 @@ int readBoundary( char *bndFile ) {
 /////////////////////////////////////////////////////////////////////////////////////////
 void getShape( int n ) {
 	int i;
-	for ( i = 0 ; i < S[n].L ; i++ )
-		cp.p[i] = S[n].p[i];
-	cp.L = S[n].L;
+	for ( i = fS[n] ; i < fS[n+1] ; i++ )
+		cp.p[i] = sL[i];
 	cp.n = n;
 }
 
 void divideSR( int n ) {
 	cpn = 0;
 	int i,j = 0;
-	for ( i = 1 ; i < S[n].L ; i++ ) {
+	for ( i = fS[n]+1 ; i < fS[n+1] ; i++ ) {
 		clearPly();
-		np[cpn].p[j++] = S[n].p[i-1];
-		pseudoLegalMoves(S[n].p[i-1]);
-		if ( arrayCon( mL+fM[ply],fM[ply+1]-fM[ply],S[n].p[i] ) == -1 ) {
+		np[cpn].p[j++] = sL[i-1];
+		pseudoLegalMoves(sL[i-1]);
+		if ( arrayCon( mL+fM[ply],fM[ply+1]-fM[ply],sL[i] ) == -1 ) {
 			np[cpn].L = j;
 			np[cpn].n = cpn;
 			j = 0;
 			cpn++;
 		}
 	}
-	np[cpn].p[j] = S[n].p[S[n].L-1];
+	np[cpn].p[j] = sL[fS[n+1]-1];
 	np[cpn].L = ++j;
 	np[cpn].n = cpn;
 	cpn++;
@@ -790,9 +790,9 @@ int aggregate( int verbose ) {
 		joinReg( i,j ); // make the pair matrix
 		cpn = 0;
 		for ( a = 0 ; a < cpm ; a++ )
-			if ( S[a].region == i )
+			if ( sR[a] == i )
 				for ( b = 0 ; b < cpm ; b++ )
-					if ( S[b].region == j )
+					if ( sR[b] == j )
 						if ( mergeRegions( a, b ) )
 							return 1;				
 		if ( verbose ) {
@@ -875,6 +875,12 @@ int main(int argc, char **argv)
 	char outLogs[96] = "";
 	char outTarg[96] = "";
 	char saveDir[96] = "";
+	
+	// make sure the shape library is initialized to zeros
+	memset(sL, 0, sizeof sL);
+	memset(sE, 0, sizeof sE);
+	memset(sR, 0, sizeof sR);
+	memset(fS, 0, sizeof fS);
 	
 	//////////////////////////////////////////////////////////
 	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html#OPTOPTARGS
@@ -1115,7 +1121,7 @@ int main(int argc, char **argv)
 			cp.p[0] = i;
 			cp.L = 1;
 			saveSR(0);
-			S[cpm-1].region = k;
+			sR[cpm-1] = k;
 			cpn++;
 		}
 		
@@ -1149,7 +1155,7 @@ int main(int argc, char **argv)
 	for ( i = 0; i <= TOL ; i++ ) {
 		k = 0;
 		for ( j = 0 ; j < cpm ; j++ )
-			if ( S[j].eval == i )
+			if ( sE[j] == i )
 				k++;
 		fprintf(logs,"num_eval_%d\t%d\n",i,k);
 	}
