@@ -6,7 +6,7 @@
 #include <getopt.h>
 
 //////////////////////////////////////////////////////////////////////////////////////
-// gcc -Wall -Werror -O3 cubizeDraftTwo.c -mcmodel=large -o cubize            
+// gcc -Wall -Werror -O3 cubizeDraftThree.c -mcmodel=large -o cubize            
 //////////////////////////////////////////////////////////////////////////////////////
 					
 //////////////////////////////////////////////////////////////////////////////////////
@@ -114,6 +114,13 @@ int arrayLst( int *arr, int n, int end ) {
 	for ( i = 0 ; i < end ; i++ )    
 		if ( arr[i] == n )
 			j = i;
+	return j;
+}
+
+int arraySum( int *arr, int n, int end ) {
+	int i,j=0;
+	for ( i = n ; i < end ; i++ )    
+		j += arr[i];
 	return j;
 }
 
@@ -428,6 +435,58 @@ int comp() { // Mat is the current path (shape)
 		if ( Mat[i] == 1 )
 			if ( Reg[i] == 0 )
 				score++;
+	for ( i = 0; i < cp.L-1 ; i++ )
+		for ( j = i+1; j < cp.L ; j++ )
+			if ( cp.p[i] == cp.p[j] )
+				return 1000;
+	return score;
+}
+
+int norm() { // Mat is the current path (shape)
+	int i,j,score=0;
+	for ( i = 0; i < pwr(cp.L,2) ; i++ )
+		if ( Mat[i] == 1 )
+			if ( Reg[i] == 0 )
+				score++;
+	score = score * ( L[6] / pwr(cp.L,2));
+	for ( i = 0; i < cp.L-1 ; i++ )
+		for ( j = i+1; j < cp.L ; j++ )
+			if ( cp.p[i] == cp.p[j] )
+				return 1000;
+	return score;
+}
+
+int nmsd() { // Mat is the current path (shape)
+	int i,j,msd=0;
+	for ( i = 0; i < cp.L-1 ; i++ )
+		for ( j = i+1; j < cp.L ; j++ )
+			if ( cp.p[i] == cp.p[j] )
+				return 1000;
+	for ( i = 0; i < pwr(cp.L,2) ; i++ )
+		if ( Mat[i] != Reg[i] )
+				msd++;
+	return ( msd * 100 ) / pwr(cp.L,2);
+}
+
+int diag() { // Mat is the current path (shape)
+	int diagMat[531441];
+	int diagReg[531441];
+	memset(diagMat, 0, sizeof diagMat);
+	memset(diagReg, 0, sizeof diagReg);
+	int i,j,m,n,score=0;
+	for ( i = 0; i < cp.L; i++ )
+		for ( j = 0; j < cp.L; j++ ) {
+			diagMat[abs(i-j)] += Mat[i*cp.L+j];
+			diagReg[abs(i-j)] += Reg[i*cp.L+j];
+		}
+	m = arraySum(diagMat,0,cp.L);
+	n = arraySum(diagReg,0,cp.L);
+	if ( m == 0 )
+		m++;
+	if ( n == 0 )
+		n++;
+	for ( i = 0; i < cp.L ; i++ )
+		score += abs( ( (diagMat[i]*pwr(cp.L,2)) / m ) - ( (diagReg[i]*pwr(cp.L,2)) / n ) );
 	for ( i = 0; i < cp.L-1 ; i++ )
 		for ( j = i+1; j < cp.L ; j++ )
 			if ( cp.p[i] == cp.p[j] )
@@ -937,7 +996,7 @@ int main(int argc, char **argv)
 			
 		  case 'o':
 			printf("setting output directory to '%s'\n", optarg);
-			strcpy(saveDir,"/home/jovyan/data/");
+			strcpy(saveDir,"./data/");
 			strcat(saveDir,optarg);
 			strcpy(matFile,saveDir);
 			strcpy(bndFile,saveDir);
@@ -960,6 +1019,15 @@ int main(int argc, char **argv)
 			} else if ( !strcmp(optarg,"comp") ) {
 				printf("setting eval function to comp\n");
 				evalPtr = &comp;
+			} else if ( !strcmp(optarg,"diag") ) {
+				printf("setting eval function to diag\n");
+				evalPtr = &diag;
+			} else if ( !strcmp(optarg,"norm") ) {
+				printf("setting eval function to norm\n");
+				evalPtr = &norm;
+			}  else if ( !strcmp(optarg,"nmsd") ) {
+				printf("setting eval function to nmsd\n");
+				evalPtr = &nmsd;
 			} else
 				evalPtr = &eval;
 			break;
@@ -1021,12 +1089,12 @@ int main(int argc, char **argv)
 	}
 
 	if ( saveDir[0] == '\0' ) {
-		strcpy(matFile,"/home/jovyan/data/results/inputMatrix.txt");
-		strcpy(bndFile,"/home/jovyan/data/results/inputBounds.txt");
-		strcat(outMatr,"/home/jovyan/data/results/outputMatrix.txt");
-		strcat(outFold,"/home/jovyan/data/results/outputFolded.txt");
-		strcat(outLogs,"/home/jovyan/data/results/outputLogged.txt");
-		strcat(outTarg,"/home/jovyan/data/results/outputTarget.txt");
+		strcpy(matFile,"./data/results/inputMatrix.txt");
+		strcpy(bndFile,"./data/results/inputBounds.txt");
+		strcat(outMatr,"./data/results/outputMatrix.txt");
+		strcat(outFold,"./data/results/outputFolded.txt");
+		strcat(outLogs,"./data/results/outputLogged.txt");
+		strcat(outTarg,"./data/results/outputTarget.txt");
 	}
 	
 	//////////////////////////////////////////////////////////
