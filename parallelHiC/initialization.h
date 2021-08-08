@@ -1,3 +1,4 @@
+#define pass (void)0
 void segmentBoundary( int maxSize );
 void saveToTarget();
 void unsaveTarget();

@@ -41,6 +41,16 @@ int arrayCnt( int *arr, int n, int end ) {
 	return j;
 }
 
+int arrayNot( int *arr, int n, int end ) { 
+	int i = n + 1;
+	while ( 1 ) {
+		if ( arrayCnt(arr,i,end) == 0 )
+			return i;
+		i++;
+	}		
+	return -1;
+}
+
 int arrayFst( int *arr, int n, int end ) { 
 	int i;
 	for ( i = 0 ; i < end ; i++ )    

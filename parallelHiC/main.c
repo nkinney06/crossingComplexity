@@ -11,6 +11,17 @@
 #include "library.h"
 #include "shapes.h"
 // gcc -Wall -Werror -O3 engine.c main.c utilities.c outputs.c initialization.c contacts.c shapes.c library.c -fopenmp
+// scp -r -P 2222 nick@198.82.232.118:coolerinjupyter/data/*six ./
+// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820075_Cell19_model_six
+// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820068_Cell12_model_six
+// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820070_Cell14_model_six
+// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820059_Cell3_model_six
+// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820067_Cell11_model_six
+// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820057_Cell1_model_six
+// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820058_Cell2_model_six
+// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820066_Cell10_model_six
+// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820069_Cell13_model_six
+// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820074_Cell18_model_six
 
 int ftime_ok = 0;  /* does ftime return milliseconds? */
 int get_ms() {
@@ -33,32 +44,22 @@ int main(int argc, char **argv){
 	sumPaths         = 3;  // number of paths in the system
 	segsize          = 8;  // boundary segmentation size
 	verbose          = 0;  // flag for verbose
-	myEval           = 1;  // evaluation function 1 or 2
+	myEval           = 0;  // evaluation function 1 or 2
 	bndopt           = -1; // flag/score for boundary optimization
 	convolve         = -1; // number of matricies to convolve
 	maxMisMatch      = -1; // deconvolution mode
 	numShapes        = 0;
 	randSeed = time(NULL); // random seed
-	
-	char matFile[63]   =   "./results/inputMatrix.txt";
-	char bndFile[63]   =   "./results/inputBounds.txt";
-	char fldFile[63]   =   "./results/inputFolded.txt";
-	char outMatr[63]   =   "./results/outputMatrix.txt";
-	char outFold[63]   =   "./results/outputFolded.txt";
-	char outLogs[63]   =   "./results/outputLogged.txt";
-	char outTarg[63]   =   "./results/outputTarget.txt";
-	char outSols[63]   =   "./results/outputSolved.txt";
-	
-	FILE *sols = fopen(outSols, "w");
-	FILE *fold = fopen(outFold, "w");
-	FILE *matr = fopen(outMatr, "w");
-	FILE *outf = fopen(outTarg, "w");
-	FILE *logs = fopen(outLogs, "w");
-	if (sols == NULL) {  exit(1);  }
-	if (fold == NULL) {  exit(1);  }
-	if (matr == NULL) {  exit(1);  }
-	if (outf == NULL) {  exit(1);  }
-	if (outf == NULL) {	 exit(1);  }
+	memset(mySizes,-1,sizeof mySizes);
+	char saveDir[127] = "./results";
+	char matFile[127];
+	char bndFile[127];
+	char fldFile[127];
+	char outMatr[127];
+	char outFold[127];
+	char outLogs[127];
+	char outTarg[127];
+	char outSols[127];
 	
 	//////////////////////////////////////////////////////////
 	// https://azrael.digipen.edu/~mmead/www/Courses/CS180/getopt.html#OPTOPTARGS
@@ -75,6 +76,7 @@ int main(int argc, char **argv){
 			{"numPaths",    required_argument, NULL,  'n'},
 			{"eval",        required_argument, NULL,  'e'},
 			{"seed",        required_argument, NULL,  'i'},
+			{"saveDir",     required_argument, NULL,  'o'},
 			{"help",        no_argument,       NULL,  'h'},
 			{"verbose",     no_argument,       NULL,  'v'},
 			{"convolve",    optional_argument, NULL,  'c'},
@@ -83,7 +85,7 @@ int main(int argc, char **argv){
 			{NULL,          0,                 NULL,    0}
 		};
 
-		c = getopt_long(argc, argv, "-:s:t:e:z:n:i:hvc::d::b::", long_options, &option_index);
+		c = getopt_long(argc, argv, "-:s:t:e:z:n:i:o:hvc::d::b::", long_options, &option_index);
 		if (c == -1)
 		  break;
 
@@ -101,6 +103,10 @@ int main(int argc, char **argv){
 			break;
 		  case 'i':
 			randSeed = atoi(optarg);
+			break;
+		  case 'o':
+		    strcat(saveDir,"/");
+		    strcat(saveDir,optarg);
 			break;
 		  case 'z':
 			segsize = atoi(optarg);
@@ -139,15 +145,40 @@ int main(int argc, char **argv){
 	}
 
 	//////////////////////////////////////////////////////////
+	// setup the output files
+	////////////////////////////////////////////////////////// 
+	sprintf(matFile,"%s%s",saveDir,"/inputMatrix.txt");
+	sprintf(bndFile,"%s%s",saveDir,"/inputBounds.txt");
+	sprintf(fldFile,"%s%s",saveDir,"/inputFolded.txt");
+	sprintf(outMatr,"%s%s",saveDir,"/outputMatrix.txt");
+	sprintf(outFold,"%s%s",saveDir,"/outputFolded.txt");
+	sprintf(outLogs,"%s%s",saveDir,"/outputLogged.txt");
+	sprintf(outTarg,"%s%s",saveDir,"/outputTarget.txt");
+	sprintf(outSols,"%s%s",saveDir,"/outputSolved.txt");
+	FILE *sols = fopen(outSols, "w");
+	FILE *fold = fopen(outFold, "w");
+	FILE *matr = fopen(outMatr, "w");
+	FILE *outf = fopen(outTarg, "w");
+	FILE *logs = fopen(outLogs, "w");
+	if (sols == NULL) {  exit(1);  }
+	if (fold == NULL) {  exit(1);  }
+	if (matr == NULL) {  exit(1);  }
+	if (outf == NULL) {  exit(1);  }
+	if (logs == NULL) {	 exit(1);  }
+	
+	//////////////////////////////////////////////////////////
 	// initialization steps
 	////////////////////////////////////////////////////////// 
 	int i,j,k,starttime,stoptime;;
 	srand(randSeed);
+	printf("\nset random seed to %d\n",randSeed);
 	for ( i = 0 ; i < 7 ; i++ )
 		L[i] = pwr(pathSize,i);
-	
+
 	if ( convolve > 0 )    // convolve the user specified number of matricies
 		convolution(convolve,matFile,bndFile,fldFile);
+	else
+		initialize();
 	
 	if ( maxMisMatch < 0 ) // if we are not deconvolving the matrix then exit
 		return 0;
@@ -158,11 +189,11 @@ int main(int argc, char **argv){
 	else
 		for ( i = 0 ; i < L[3] ; i++ )
 			searchPath.bounds[i] = regionPath.matrix[i+0*L[3]];
-		
-	readHicMatrix(matFile);
+
+	searchPath.L = readHicMatrix(matFile);	
 	segmentBoundary(segsize);	
 	printMatrix(outf);
-	
+		
 	//////////////////////////////////////////////////////////
 	// algorithm section 1
     //////////////////////////////////////////////////////////

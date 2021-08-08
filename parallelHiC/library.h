@@ -1,11 +1,11 @@
 typedef struct {
     int points[3000000000];
-	int region[200000000];
+	int region[300000000];
 } shape;
 shape shapes;
 int numShapes;
 int maxMisMatch;
-int fstPnt[200000000];
+int fstPnt[300000000];
 
 // functions
 void deleteShape( int n );

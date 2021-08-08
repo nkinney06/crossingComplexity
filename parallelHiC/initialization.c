@@ -290,13 +290,16 @@ void sortSegments() {
 		}
 	} while ( switched == 1 );
 }
-	
+		
 void segmentBoundary( int maxSize ) {
-	int i,j=0,k;	
+	int i,j,k;
+	int a,b,c;
 	memset(searchPath.region, searchPath.bounds[0] == 6 ? -1 : 0, sizeof searchPath.region);
 	for ( i = 0 ; i < L[3]-1 ; i++ ) {
 		searchPath.region[i+1] = searchPath.region[i];
-		if ( ( searchPath.bounds[i] == 6 ) & ( searchPath.bounds[i+1] < 6 ) )	
+		if ( ( searchPath.bounds[i] == 6 ) & ( searchPath.bounds[i+1] == 6 ) )
+			continue;
+		else if ( ( searchPath.bounds[i] == 6 ) & ( searchPath.bounds[i+1] < 6 ) )	
 			searchPath.region[i+1] = searchPath.region[i] + 1;
 		else if ( ( searchPath.bounds[i+1] == 6 ) & ( searchPath.bounds[i] < 6 ) )	
 			searchPath.region[i+1] = searchPath.region[i] + 1;
@@ -312,19 +315,20 @@ void segmentBoundary( int maxSize ) {
 			searchPath.region[i] = searchPath.region[i]/2 + 1;
 		else
 			searchPath.region[i] = 0;
-	j = arrayMax(searchPath.region,0,L[3]);
-	for ( i = 1 ; i <= arrayMax(searchPath.region,0,L[3]) ; i++ )
-		if ( arrayCnt(searchPath.region,i,L[3]) > maxSize ) {
-			for ( k = arrayFst(searchPath.region,i,L[3]) + arrayCnt(searchPath.region,i,L[3])/((arrayCnt(searchPath.region,i,L[3])/maxSize)+1) ; k <= arrayLst(searchPath.region,i,L[3]) ; k++ )
-				searchPath.region[k] = j + 1;
-			j = arrayMax(searchPath.region,0,L[3]);
+	for ( i = 1 ; i < L[3] ; i++ ) {
+		k = arrayCnt(searchPath.region,i,L[3]);
+		if ( k > maxSize ) {
+			a = arrayFst(searchPath.region,i,L[3]);
+			b = arrayLst(searchPath.region,i,L[3]);
+			c = arrayMax(searchPath.region,0,L[3]);
+			int n_piece = (k + maxSize - 1)/maxSize;
+			int newSize = (k + n_piece - 1)/n_piece;
+			for ( j = a + newSize; j <= b ; j++ )
+				searchPath.region[j] = c + 1;
 		}
+	}
 	sortSegments();
 }
-
-
-
-
 
 
 

@@ -24,6 +24,10 @@ void joinShapes( int a, int b, int c ) {
 		}
 	shapes.region[numShapes] = c;
 	numShapes++;
+	if (numShapes > 299999999)	{
+		printf("maximum number of shapes excedeed\n");
+		exit(0);
+	}
 }
 
 void getShape( int s ) {

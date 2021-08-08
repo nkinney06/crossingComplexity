@@ -34,11 +34,17 @@ void computeScoreMatrixSimple(int numShapesA,    int numShapesB,
 						score_for_pairs = 1000;
 						break;
 					}
-					if ( evalFun == 2 ) {
+					if ( ( evalFun / 3 ) == 1 ) {
 						if ( neighbors[ pointOne * L[3] + pointTwo ] == 1 )
 							if ( contacts[(i-fstPnt_a[a])*fstPnt_b[1] + (j-fstPnt_b[b])] == 0 )
 								score_for_pairs += 2;
-					} else {
+					}
+					else if ( ( evalFun / 3 ) == 2 ) {
+						if ( contacts[(i-fstPnt_a[a])*fstPnt_b[1] + (j-fstPnt_b[b])] == 1 )
+							if ( neighbors[ pointOne * L[3] + pointTwo ] == 0 )
+								score_for_pairs += 2;
+					}
+					else {
 						if ( neighbors[ pointOne * L[3] + pointTwo ] != contacts[(i-fstPnt_a[a])*fstPnt_b[1] + (j-fstPnt_b[b])] )
 							score_for_pairs += 2;
 					}
@@ -53,7 +59,7 @@ void computeScoreMatrixSimple(int numShapesA,    int numShapesB,
 // shape generation functions
 /////////////////////////////////////////////////////////////////////////////////////////
 void joinAllShapesSimple( int a, int b ) {                     
-	int i,j;
+	int i,j,n = 0;
 	int aFrom = firstShape(a);
 	int bFrom = firstShape(b);
 	int aGoto = lastShape(a);
@@ -86,8 +92,16 @@ void joinAllShapesSimple( int a, int b ) {
 	int k = arrayMax(searchPath.region,0,searchPath.L) + 1;
 	for ( i = aFrom; i <= aGoto ; i++ ) 
 		for ( j = bFrom; j <= bGoto ; j++ )
-			if ( scores[(i-aFrom)*(bTotl)+(j-bFrom)] <= maxMisMatch )
+			if ( scores[(i-aFrom)*(bTotl)+(j-bFrom)] <= maxMisMatch ) {
 				joinShapes( i, j, k );
+				n++;
+				}
+				
+	if ( n == 0 ) {
+		printf("no matching shapes found, exiting\n");
+		exit(0);
+	}
+			
 	for ( i = 0 ; i < searchPath.L ; i++ )
 		if ( ( searchPath.region[i] == a ) | ( searchPath.region[i] == b ) )
 			searchPath.region[i] = k;
@@ -109,10 +123,15 @@ int evalSearchPath() {
 		for ( j = i+1 ; j < searchPath.L ; j++ ) {
 			if ( searchPath.points[i] == searchPath.points[j] )
 				return 1000;
-			if ( myEval == 2 ) {
+			if ( ( myEval % 3 ) == 1 ) {
 				if ( ( neighbors[ searchPath.points[i] * L[3] + searchPath.points[j] ] == 1 ) & ( regionPath.matrix[ i * searchPath.L + j ] == 0 ) )
 					score_for_shape += 2;
-			} else {
+			}
+			else if ( ( myEval % 3 ) == 2 ) {
+				if ( ( neighbors[ searchPath.points[i] * L[3] + searchPath.points[j] ] == 0 ) & ( regionPath.matrix[ i * searchPath.L + j ] == 1 ) )
+					score_for_shape += 2;
+			}
+			else {
 				if ( neighbors[ searchPath.points[i] * L[3] + searchPath.points[j] ] != regionPath.matrix[ i * searchPath.L + j ] )
 					score_for_shape += 2;
 			}
