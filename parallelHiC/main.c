@@ -10,18 +10,6 @@
 #include "contacts.h"
 #include "library.h"
 #include "shapes.h"
-// gcc -Wall -Werror -O3 engine.c main.c utilities.c outputs.c initialization.c contacts.c shapes.c library.c -fopenmp
-// scp -r -P 2222 nick@198.82.232.118:coolerinjupyter/data/*six ./
-// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820075_Cell19_model_six
-// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820068_Cell12_model_six
-// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820070_Cell14_model_six
-// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820059_Cell3_model_six
-// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820067_Cell11_model_six
-// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820057_Cell1_model_six
-// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820058_Cell2_model_six
-// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820066_Cell10_model_six
-// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820069_Cell13_model_six
-// ./a.out -d -e2 -b -t96,81,39 -v -s6 -oGSM3820074_Cell18_model_six
 
 int ftime_ok = 0;  /* does ftime return milliseconds? */
 int get_ms() {
